@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import WeatherDisplay from '../components/WeatherDisplay.vue';
+import WeatherDisplay from '../components/weather/WeatherDisplay.vue';
 import type { CityConfig, WeatherData } from '@/types/weather';
 import { ElSelect, ElOption } from 'element-plus';
 import { defineProps, defineEmits } from 'vue';

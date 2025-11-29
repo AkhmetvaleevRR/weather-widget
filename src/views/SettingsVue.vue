@@ -8,8 +8,8 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, defineProps, defineEmits } from 'vue';
 import type { CityConfig } from '@/types/weather';
-import CityList from '../components/CityList.vue';
-import AddCityForm from '../components/AddCityForm.vue';
+import CityList from '../components/settings/CityList.vue';
+import AddCityForm from '../components/settings/AddCityForm.vue';
 
 const props = defineProps<{ modelValue: CityConfig[] }>();
 const emit = defineEmits<{ (e: 'update:modelValue', value: CityConfig[]): void }>();
