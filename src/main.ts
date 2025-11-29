@@ -1,5 +1,23 @@
 import { createApp } from 'vue'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
-import router from './router'
+import './assets/styles/main.scss'
 
-createApp(App).use(router).mount('#app')
+// Создаем приложение
+const app = createApp(App)
+
+// Используем Element Plus
+app.use(ElementPlus)
+
+// Регистрируем иконки
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
+
+// Монтируем приложение
+app.mount('#app')
+
+// Экспортируем для использования как библиотеки
+export default app

@@ -1,0 +1,20 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+// Стили для draggable
+.sortable-ghost {
+  opacity: 0.5;
+}
+
+.sortable-chosen {
+  background: #ebf5ff !important;
+}
+
+// Глобальные стили
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f0f2f5;
+}
