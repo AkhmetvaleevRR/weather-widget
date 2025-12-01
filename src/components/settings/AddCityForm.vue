@@ -3,13 +3,13 @@
     <el-form ref="formRef" :model="formData" :rules="rules" @submit.prevent="addNewCity" label-position="top">
       <el-form-item label="Add Location:" prop="cityName" class="settings-input-container">
         <el-input
-          v-model="formData.cityName"
+          v-model.trim="formData.cityName"
           placeholder="Enter city name"
         >
           <template #append>
             <el-button 
               type="primary" 
-              :icon="ArrowRight" 
+              :icon="ArrowRight"
               @click="addNewCity" 
               circle 
               :loading="isLoading"
@@ -39,10 +39,25 @@ const formData = reactive({
   cityName: ''
 });
 
+const validateCityName = (rule: unknown, value: string, callback: (error?: Error) => void) => {
+  if (!value) {
+    callback();
+    return;
+  }
+  
+  if (!/^[a-zA-Z\s-]+$/.test(value)) {
+    callback(new Error('City name can only contain letters, spaces and hyphens'));
+    return;
+  }
+  
+  callback();
+};
+
 const rules: FormRules = {
   cityName: [
     { required: true, message: 'Please enter a city name', trigger: 'blur' },
-    { min: 2, message: 'City name must be at least 2 characters', trigger: 'blur' }
+    { min: 2, message: 'City name must be at least 2 characters', trigger: 'blur' },
+    { validator: validateCityName, trigger: 'blur' }
   ]
 };
 
@@ -59,10 +74,7 @@ const addNewCity = async () => {
     return;
   }
 
-  if (/^\d+$/.test(cityName)) {
-    ElMessage.error('Invalid city name');
-    return;
-  }
+
 
   isLoading.value = true;
   const weatherApi = WeatherApi.getInstance();
