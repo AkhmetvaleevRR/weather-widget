@@ -49,16 +49,24 @@ export class WeatherApi {
 
   async validateCity(city: string): Promise<{ name: string; lat: number; lon: number } | null> {
     const response = await fetch(
-      `${BASE_URL}/geo/1.0/direct?q=${city}&limit=1&appid=${API_KEY}`
+      `${BASE_URL}/data/2.5/weather?q=${city}&appid=${API_KEY}`
     );
-    if (!response.ok) {
-      throw new Error('Failed to fetch coordinates for validation');
-    }
+    
     const data = await response.json();
-    if (data && data.length > 0) {
-      return { name: data[0].name, lat: data[0].lat, lon: data[0].lon };
+    
+    if (data.message && data.message.toLowerCase().includes('not found')) {
+      throw new Error('City not found');
     }
-    return null;
+    
+    if (data.name && data.coord) {
+      return { 
+        name: data.name, 
+        lat: data.coord.lat, 
+        lon: data.coord.lon 
+      };
+    }
+    
+    throw new Error('City not found');
   }
 
   getWeatherIconUrl(iconCode: string): string {
