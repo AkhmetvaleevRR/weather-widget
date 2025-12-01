@@ -1,4 +1,3 @@
-// src/widget.ts
 import { defineCustomElement } from 'vue';
 import WeatherWidget from './components/WeatherWidget.ce.vue';
 
