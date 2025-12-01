@@ -6,7 +6,7 @@
       </div>
       <el-button 
         type="info" 
-        :icon="showSettings ? 'Close' : 'Setting'" 
+        :icon="showSettings ? Close : Setting" 
         link
         @click="showSettings = !showSettings"
         class="widget-header__button"
@@ -34,11 +34,18 @@
 <script setup lang="ts">
 import { ref, onMounted, watch, nextTick } from 'vue';
 import { ElMessage, ElButton } from 'element-plus';
+import { Setting, Close } from '@element-plus/icons-vue';
 import SettingsVue from '../views/SettingsVue.vue';
 import WeatherView from '../views/WeatherVue.vue';
+
 import { WeatherApi } from '@/utils/weatherApi';
 import { LocalStorageManager } from '@/utils/localStorage';
 import type { WeatherData, CityConfig, WidgetConfig } from '@/types/weather';
+import elementPlusStyles from 'element-plus/dist/index.css?inline';
+import { componentStyles } from '@/styles/component-styles';
+
+
+
  
 const weatherApi = WeatherApi.getInstance();
 
@@ -154,6 +161,26 @@ const loadWeatherByLocation = async () => {
 };
 
 onMounted(async () => {
+  // Костыль для стилей Element Plus
+  nextTick(() => {
+    if (widgetRef.value) {
+      const shadowRoot = widgetRef.value.getRootNode() as ShadowRoot;
+      const targetElement = (shadowRoot && shadowRoot.host) ? shadowRoot : widgetRef.value;
+      
+      if (elementPlusStyles) {
+        const elementStyleEl = document.createElement('style');
+        elementStyleEl.textContent = elementPlusStyles;
+        targetElement.appendChild(elementStyleEl);
+      }
+      
+      if (componentStyles) {
+        const componentStyleEl = document.createElement('style');
+        componentStyleEl.textContent = componentStyles;
+        targetElement.appendChild(componentStyleEl);
+      }
+    }
+  });
+  
   loadConfig();
   if (cities.value.length === 0) {
     await loadWeatherByLocation();
@@ -223,3 +250,4 @@ watch(showSettings, (isSettingsVisible) => {
   }
 }
 </style>
+

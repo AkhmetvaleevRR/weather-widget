@@ -4,18 +4,18 @@ module.exports = defineConfig({
   transpileDependencies: true,
   filenameHashing: false,
 
-  configureWebpack: {
-    entry: "./src/main.ts",
-    output: {
-      filename: "weather-widget.js",
-      library: "WeatherWidget",
-      libraryTarget: "umd",
-      libraryExport: "default",
-      globalObject: "this",
-    },
-    optimization: {
-      splitChunks: false,
-    },
+  configureWebpack: (config) => {
+    if (process.env.NODE_ENV === 'production') {
+      config.entry = "./src/widget.ts";
+      config.output.filename = "WeatherWidget.js";
+      config.output.library = "WeatherWidget";
+      config.output.libraryTarget = "umd";
+      config.output.globalObject = "this";
+      config.optimization = {
+        splitChunks: false,
+      };
+      config.plugins.push(new (require('./webpack-plugins/css-inline-plugin'))());
+    }
   },
 
   chainWebpack: (config) => {

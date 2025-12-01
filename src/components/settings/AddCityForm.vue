@@ -1,11 +1,10 @@
 <template>
   <div class="settings-header">
-    <el-form @submit.prevent="addNewCity" label-position="top">
-      <el-form-item label="Add Location:" class="settings-input-container">
+    <el-form ref="formRef" :model="formData" :rules="rules" @submit.prevent="addNewCity" label-position="top">
+      <el-form-item label="Add Location:" prop="cityName" class="settings-input-container">
         <el-input
-          v-model="newCityName"
+          v-model="formData.cityName"
           placeholder="Enter city name"
-          @keyup.enter="addNewCity"
         >
           <template #append>
             <el-button 
@@ -23,25 +22,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, defineProps } from 'vue';
+import { ref, reactive, defineEmits, defineProps } from 'vue';
 import { ElMessage, ElButton, ElInput, ElForm, ElFormItem } from 'element-plus';
 import { ArrowRight } from '@element-plus/icons-vue';
 import type { CityConfig } from '@/types/weather';
 import { WeatherApi } from '@/utils/weatherApi';
+import type { FormInstance, FormRules } from 'element-plus';
 
 const props = defineProps<{ existingCities: CityConfig[] }>();
 const emit = defineEmits<{ (e: 'add-city', city: CityConfig): void }>();
 
-const newCityName = ref('');
+const formRef = ref<FormInstance>();
 const isLoading = ref(false);
 
-const addNewCity = async () => {
-  const cityName = newCityName.value.trim();
+const formData = reactive({
+  cityName: ''
+});
 
-  if (!cityName) {
-    ElMessage.warning('Please enter a city name');
-    return;
-  }
+const rules: FormRules = {
+  cityName: [
+    { required: true, message: 'Please enter a city name', trigger: 'blur' },
+    { min: 2, message: 'City name must be at least 2 characters', trigger: 'blur' }
+  ]
+};
+
+const addNewCity = async () => {
+  if (!formRef.value || isLoading.value) return;
+  
+  const valid = await formRef.value.validate().catch(() => false);
+  if (!valid) return;
+
+  const cityName = formData.cityName.trim();
   
   if (props.existingCities.some(city => city.name.toLowerCase() === cityName.toLowerCase())) {
     ElMessage.warning('City already exists');
@@ -63,12 +74,13 @@ const addNewCity = async () => {
         order: props.existingCities.length
       };
       emit('add-city', newCity);
-      newCityName.value = '';
+      formData.cityName = '';
+      formRef.value.resetFields();
     } else {
       ElMessage.error('City not found');
     }
   } catch (error) {
-    ElMessage.error('An error occurred while validating the city.');
+    ElMessage.error('City not found or API error');
   } finally {
     isLoading.value = false;
   }

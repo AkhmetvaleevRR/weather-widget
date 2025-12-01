@@ -65,7 +65,7 @@ const removeCity = (index: number) => {
 .cities-list {
   min-height: 100px;
   margin-bottom: 20px;
-  max-height: 200px;
+  max-height: 210px;
   overflow-y: auto;
 }
 
